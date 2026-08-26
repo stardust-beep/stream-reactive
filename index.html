@@ -3,75 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  body {
+  * {
     margin: 0;
-    /* Custom Background Settings */
-    background-image: url('background.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body, html {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
+    background-color: #000;
   }
-
-  .avatar {
-    max-width: 500px;
-    max-height: 500px;
-    transition: transform 0.08s ease, filter 0.08s ease;
-    filter: brightness(0.65) drop-shadow(0 0 10px rgba(0,0,0,0.6));
-  }
-
-  .talking {
-    filter: brightness(1.15) drop-shadow(0 0 25px #00f0ff);
-    transform: scale(1.04);
+  video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    display: block;
   }
 </style>
 </head>
 <body>
 
-<img id="avatar" class="avatar" src="idle.png" alt="Avatar">
+<video autoplay loop muted playsinline>
+  <!-- Replace with your actual video filename -->
+  <source src="talking-loop.mp4" type="video/mp4">
+</video>
 
-<script>
-  const idleSrc = "idle.png";
-  const talkSrc = "talk.png";
-  const avatar = document.getElementById("avatar");
-
-  const THRESHOLD = 0.035; 
-
-  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then(stream => {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      const microphone = audioContext.createMediaStreamSource(stream);
-      analyser.fftSize = 512;
-      microphone.connect(analyser);
-
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-      function checkAudio() {
-        analyser.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i];
-        }
-        let average = sum / dataArray.length / 255;
-
-        if (average > THRESHOLD) {
-          avatar.src = talkSrc;
-          avatar.classList.add("talking");
-        } else {
-          avatar.src = idleSrc;
-          avatar.classList.remove("talking");
-        }
-        requestAnimationFrame(checkAudio);
-      }
-      checkAudio();
-    })
-    .catch(err => console.error("Mic access error:", err));
-</script>
 </body>
 </html>
